@@ -1,9 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { Globe, ArrowUpRight, Menu } from "lucide-react";
+import { Globe, ArrowUpRight, Menu, Phone, Mail, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/contexts/LanguageContext";
+
+import logoImg from "@/assets/met71-logo.png";
 
 function LangPill({ code, label }: { code: "en" | "es" | "ar"; label: string }) {
   const { lang, setLang } = useLang();
@@ -41,8 +43,8 @@ export function SiteHeader() {
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex h-16 items-center justify-between gap-4">
           <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}>
-            <div className="h-10 w-10 rounded-xl border bg-[var(--sand)] grid place-items-center">
-              <span className="font-display text-lg">M</span>
+            <div className="h-10 w-10 rounded-xl border bg-[var(--sand)] grid place-items-center overflow-hidden">
+              <img src={logoImg} alt="Met71 logo" className="h-full w-full object-cover" loading="lazy" />
             </div>
             <div className={cn("leading-tight", dir === "rtl" && "text-right")}>
               <div className="font-display text-lg">{t("meta.company")}</div>

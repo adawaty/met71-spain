@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Mail, MapPin, Phone } from "lucide-react";
 
 export default function Contact() {
   const { t, dir, lang } = useLang();
@@ -101,19 +102,33 @@ export default function Contact() {
             {t("about.lede")}
           </p>
 
-          <div className={cn("mt-6 space-y-3 text-sm", dir === "rtl" && "text-right")}
+          <div className={cn("mt-6 space-y-4 text-sm", dir === "rtl" && "text-right")}
           >
-            <div>
-              <div className="text-xs text-[var(--paper)]/60">Email</div>
-              <div>info@met71.com</div>
+            <div className={cn("flex items-start gap-3", dir === "rtl" && "flex-row-reverse")}
+            >
+              <Mail className="mt-0.5 h-4 w-4 text-[var(--orange)]" />
+              <div>
+                <div className="text-xs text-[var(--paper)]/60">Email</div>
+                <div>exports@met71spain.com</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-[var(--paper)]/60">Phone</div>
-              <div>+34 XXX XXX XXX</div>
+
+            <div className={cn("flex items-start gap-3", dir === "rtl" && "flex-row-reverse")}
+            >
+              <Phone className="mt-0.5 h-4 w-4 text-[var(--orange)]" />
+              <div>
+                <div className="text-xs text-[var(--paper)]/60">Phone</div>
+                <div>+34 685 063 079</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs text-[var(--paper)]/60">Locations</div>
-              <div>Spain · Egypt</div>
+
+            <div className={cn("flex items-start gap-3", dir === "rtl" && "flex-row-reverse")}
+            >
+              <MapPin className="mt-0.5 h-4 w-4 text-[var(--orange)]" />
+              <div>
+                <div className="text-xs text-[var(--paper)]/60">Address</div>
+                <div>CALLE SAN FERNANDO, NUM 33, 03001 ALACANT/ALICANTE (ALICANTE)</div>
+              </div>
             </div>
           </div>
         </Card>

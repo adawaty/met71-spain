@@ -49,6 +49,7 @@ In production, restrict it to your website domain.
 
 Set (in your hosting provider for the website build):
 - `VITE_LEADS_API_URL=https://<your-api-domain>/api/leads`
+- `VITE_ADMIN_API_BASE=https://<your-api-domain>` (optional if same origin)
 
 Then rebuild/redeploy the website.
 

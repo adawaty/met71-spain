@@ -13,6 +13,7 @@ import Industries from "@/pages/Industries";
 import Logistics from "@/pages/Logistics";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
+import Admin from "@/pages/Admin";
 
 function AppRouter() {
   const useHash =
@@ -28,6 +29,7 @@ function AppRouter() {
         <Route path="/industries" component={Industries} />
         <Route path="/logistics" component={Logistics} />
         <Route path="/contact" component={Contact} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Router>

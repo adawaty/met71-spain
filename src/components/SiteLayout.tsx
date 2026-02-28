@@ -90,13 +90,13 @@ function MobileDrawer({
           >
             <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}
             >
-              <div className="h-10 w-10 rounded-xl border bg-[var(--sand)] grid place-items-center overflow-hidden">
+              <div className="h-12 w-12 rounded-2xl border bg-[var(--sand)] grid place-items-center overflow-hidden">
                 <img src={logoImg} alt="Met71 logo" className="h-full w-full object-contain" />
               </div>
               <div className={cn("leading-tight", dir === "rtl" && "text-right")}
               >
-                <div className="font-display text-lg">{t("meta.company")}</div>
-                <div className="text-xs text-muted-foreground">{t("meta.tagline")}</div>
+                <div className="font-display text-xl leading-none">{t("meta.company")}</div>
+                <div className="text-[11px] text-muted-foreground">{t("meta.tagline")}</div>
               </div>
             </div>
             <Button
@@ -264,10 +264,14 @@ export function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className={cn("flex flex-col gap-4 md:flex-row md:items-center md:justify-between", dir === "rtl" && "md:flex-row-reverse")}
         >
-          <div className={cn("space-y-1", dir === "rtl" && "text-right")}
-          >
-            <div className="font-display text-xl">Met71 Spain</div>
-            <div className="text-sm text-muted-foreground">{t("footer.note")}</div>
+          <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}>
+            <div className="h-12 w-12 rounded-2xl border bg-background/60 grid place-items-center overflow-hidden">
+              <img src={logoImg} alt="Met71 logo" className="h-full w-full object-contain" loading="lazy" />
+            </div>
+            <div className={cn("space-y-1", dir === "rtl" && "text-right")}>
+              <div className="font-display text-xl leading-none">Met71 Spain</div>
+              <div className="text-sm text-muted-foreground">{t("footer.note")}</div>
+            </div>
           </div>
           <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}
           >

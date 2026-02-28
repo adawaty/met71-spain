@@ -45,6 +45,9 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     // Keep html attributes in sync for proper RTL
     document.documentElement.lang = lang;
     document.documentElement.dir = dir;
+
+    // Improve bidi rendering on some browsers
+    document.documentElement.style.direction = dir;
   }, [lang, dir]);
 
   const t = useMemo(() => {

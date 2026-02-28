@@ -79,14 +79,26 @@ Design reminder (Met71): Neo‑Brutalist Trade Atlas
   body {
     @apply bg-background text-foreground;
     font-family: "Spline Sans", ui-sans-serif, system-ui;
+    text-rendering: geometricPrecision;
   }
 
   html[dir="rtl"] body {
     font-family: "Noto Kufi Arabic", "Changa", ui-sans-serif, system-ui;
+    letter-spacing: 0;
+    font-kerning: normal;
+  }
+
+  html[dir="rtl"] * {
+    letter-spacing: 0 !important;
+  }
+
+  html[dir="rtl"] .tracking-tight {
+    letter-spacing: 0 !important;
   }
 
   .font-display {
     font-family: "Fraunces", ui-serif, Georgia, serif;
+    letter-spacing: -0.015em;
   }
 
   html[dir="rtl"] .font-display {

@@ -15,8 +15,12 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 
 function AppRouter() {
+  const useHash =
+    typeof window !== "undefined" &&
+    (window.location.protocol === "file:" || window.location.pathname.endsWith(".html"));
+
   return (
-    <Router hook={useHashLocation}>
+    <Router hook={useHash ? useHashLocation : undefined}>
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/about" component={About} />

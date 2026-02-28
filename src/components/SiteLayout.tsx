@@ -243,7 +243,7 @@ export function SiteHeader() {
               </div>
 
               <Link href="/contact">
-                <Button className="rounded-full bg-[var(--orange)] text-[var(--ink)] hover:bg-[var(--orange)]/90">
+                <Button className="rounded-full bg-[var(--orange)] text-[var(--ink)] hover:bg-[var(--orange)]/90 active:scale-[0.98] transition-transform">
                   {t("cta.primary")} <ArrowUpRight className={cn("h-4 w-4", dir === "rtl" && "rotate-180")} />
                 </Button>
               </Link>

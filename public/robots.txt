@@ -1,0 +1,5 @@
+# *
+User-agent: *
+Allow: /
+
+Sitemap: https://met71-spain.vercel.app/sitemap.xml

@@ -223,11 +223,8 @@ export default function Admin() {
                     type="password"
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Enter your admin passcode"
+                    placeholder="Enter passcode"
                   />
-                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
-                    This passcode is set in Vercel as <span className="font-medium">ADMIN_PASSWORD</span>.
-                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-2">
@@ -392,7 +389,7 @@ export default function Admin() {
       </div>
 
       <Card className="mt-6 rounded-2xl border bg-[var(--sand)] p-5 text-sm text-muted-foreground">
-        Admin access is protected by a single environment variable <span className="font-medium">ADMIN_PASSWORD</span>.
+        Admin access is protected by a private passcode.
       </Card>
     </PageShell>
   );

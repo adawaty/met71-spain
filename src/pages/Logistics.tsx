@@ -7,7 +7,9 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ClipboardCheck, ThermometerSnowflake, Route, FileCheck2, ShieldAlert, Boxes } from "lucide-react";
 
-function Step({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
+import type { ElementType } from "react";
+
+function Step({ icon: Icon, title, desc }: { icon: ElementType; title: string; desc: string }) {
   const { dir } = useLang();
   return (
     <Card className="rounded-2xl border bg-card/85 p-6">

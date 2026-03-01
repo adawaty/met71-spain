@@ -52,10 +52,16 @@ export default function Home() {
             </div>
 
             <div className="mt-10 grid gap-3 md:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="rounded-2xl border bg-card/80 p-4">
-                  <div className="text-xs text-muted-foreground">{t((`home.stats.${i}.title`) as any)}</div>
-                  <div className="mt-2 text-sm">{t((`home.stats.${i}.desc`) as any)}</div>
+              {(
+                [
+                  { title: "home.stats.1.title", desc: "home.stats.1.desc" },
+                  { title: "home.stats.2.title", desc: "home.stats.2.desc" },
+                  { title: "home.stats.3.title", desc: "home.stats.3.desc" },
+                ] as const
+              ).map((s) => (
+                <Card key={s.title} className="rounded-2xl border bg-card/80 p-4">
+                  <div className="text-xs text-muted-foreground">{t(s.title)}</div>
+                  <div className="mt-2 text-sm">{t(s.desc)}</div>
                 </Card>
               ))}
             </div>

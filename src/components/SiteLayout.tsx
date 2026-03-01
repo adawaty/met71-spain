@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Globe, Menu, X, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowUpRight, Globe, Menu, X, Mail, MapPin, Phone, Home, Info, BriefcaseBusiness, Boxes, MessageCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -67,6 +67,13 @@ function MobileDrawer({
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    // close after navigation
+    onClose();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
+
   if (!open) return null;
 
   return (
@@ -126,7 +133,6 @@ function MobileDrawer({
               <Link
                 key={n.href}
                 href={n.href}
-                onClick={onClose as any}
                 className={cn(
                   "rounded-xl border px-4 py-3 text-sm transition",
                   "bg-card/70 hover:bg-[var(--sand)]",
@@ -160,7 +166,7 @@ function MobileDrawer({
             </div>
           </div>
 
-          <Link href="/contact" onClick={onClose as any}>
+          <Link href="/contact">
             <Button className="w-full rounded-full bg-[var(--orange)] text-[var(--ink)] hover:bg-[var(--orange)]/90">
               {t("cta.primary")} <ArrowUpRight className={cn("h-4 w-4", dir === "rtl" && "rotate-180")} />
             </Button>
@@ -168,6 +174,49 @@ function MobileDrawer({
         </div>
       </div>
     </div>
+  );
+}
+
+function MobileDock() {
+  const { t, dir } = useLang();
+  const [location] = useLocation();
+
+  const items = [
+    { href: "/", label: t("nav.home"), Icon: Home },
+    { href: "/about", label: t("nav.about"), Icon: Info },
+    { href: "/services", label: t("nav.services"), Icon: BriefcaseBusiness },
+    { href: "/industries", label: t("nav.industries"), Icon: Boxes },
+    { href: "/contact", label: t("nav.contact"), Icon: MessageCircle },
+  ];
+
+  return (
+    <nav
+      className={cn(
+        "fixed bottom-3 left-1/2 z-40 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 rounded-3xl border bg-background/90 backdrop-blur-md shadow-lg lg:hidden",
+        "px-2 py-2",
+      )}
+      aria-label="Mobile navigation"
+    >
+      <div className={cn("flex items-center justify-between", dir === "rtl" && "flex-row-reverse")}
+      >
+        {items.map(({ href, label, Icon }) => {
+          const active = location === href;
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex w-[20%] flex-col items-center justify-center gap-1 rounded-2xl py-2 text-[11px] transition",
+                active ? "bg-[var(--ink)] text-[var(--paper)]" : "text-muted-foreground hover:bg-[var(--sand)]",
+              )}
+            >
+              <Icon className={cn("h-4 w-4", active && "text-[var(--orange)]")} />
+              <span className={cn("truncate", dir === "rtl" && "text-[10px]")}>{label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
@@ -192,13 +241,13 @@ export function SiteHeader() {
           <div className="flex h-16 items-center justify-between gap-4">
             <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}
             >
-              <div className="h-10 w-10 rounded-xl border bg-[var(--sand)] grid place-items-center overflow-hidden">
+              <div className="h-12 w-12 md:h-14 md:w-14 rounded-2xl border bg-[var(--sand)] grid place-items-center overflow-hidden">
                 <img src={logoImg} alt="Met71 logo" className="h-full w-full object-contain" loading="lazy" />
               </div>
               <div className={cn("leading-tight", dir === "rtl" && "text-right")}
               >
-                <div className="font-display text-lg">{t("meta.company")}</div>
-                <div className="text-xs text-muted-foreground">{t("meta.tagline")}</div>
+                <div className="font-display text-xl md:text-2xl">{t("meta.company")}</div>
+                <div className="text-xs md:text-sm text-muted-foreground">{t("meta.tagline")}</div>
               </div>
             </div>
 
@@ -253,6 +302,7 @@ export function SiteHeader() {
       </header>
 
       <MobileDrawer open={open} onClose={() => setOpen(false)} />
+      <MobileDock />
     </>
   );
 }
@@ -265,11 +315,11 @@ export function SiteFooter() {
         <div className={cn("flex flex-col gap-4 md:flex-row md:items-center md:justify-between", dir === "rtl" && "md:flex-row-reverse")}
         >
           <div className={cn("flex items-center gap-3", dir === "rtl" && "flex-row-reverse")}>
-            <div className="h-12 w-12 rounded-2xl border bg-background/60 grid place-items-center overflow-hidden">
+            <div className="h-16 w-16 md:h-20 md:w-20 rounded-3xl border bg-background/60 grid place-items-center overflow-hidden">
               <img src={logoImg} alt="Met71 logo" className="h-full w-full object-contain" loading="lazy" />
             </div>
             <div className={cn("space-y-1", dir === "rtl" && "text-right")}>
-              <div className="font-display text-xl leading-none">Met71 Spain</div>
+              <div className="font-display text-2xl md:text-3xl leading-none">Met71 Spain</div>
               <div className="text-sm text-muted-foreground">{t("footer.note")}</div>
             </div>
           </div>

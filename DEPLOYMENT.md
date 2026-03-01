@@ -17,7 +17,7 @@ The output is `dist/`.
 - Vercel (static)
 - Cloudflare Pages
 
-> Make sure you also deploy the Leads API and then set the environment variable `VITE_LEADS_API_URL`.
+> Make sure you also deploy the Leads API and then set the environment variables below.
 
 ## Leads API (Node/Express)
 
@@ -37,17 +37,18 @@ Deploy as a small Node service on:
 - Railway
 - Northflank
 
-### Environment variables
+### Environment variables (API)
 - `DATABASE_URL` = Neon Postgres connection string (keep secret)
 - `PORT` = service port (platform will provide)
 
-### CORS
-The API currently enables CORS for all origins for simplicity.
-In production, restrict it to your website domain.
+**Admin auth (JWT + refresh tokens)**
+- `JWT_ACCESS_SECRET` = long random secret used to sign access tokens
+- `REFRESH_TOKEN_PEPPER` = long random secret used to hash stored refresh tokens
 
-## Hooking the form to the API
+> If you rotate either secret, all active sessions will be invalidated.
 
-Set (in your hosting provider for the website build):
+### Environment variables (website build)
+Set these in your hosting provider for the website build:
 - `VITE_LEADS_API_URL=https://<your-api-domain>/api/leads`
 - `VITE_ADMIN_API_BASE=https://<your-api-domain>` (optional if same origin)
 
@@ -60,4 +61,14 @@ Then rebuild/redeploy the website.
 3) In Neon SQL editor:
 ```sql
 select * from public.leads order by created_at desc limit 20;
+```
+4) Open `https://<site>/admin` and sign in using an admin user
+
+## Seeding admin users
+
+Admin users are stored in `public.admin_users`.
+
+To revoke all sessions:
+```sql
+delete from public.refresh_tokens;
 ```

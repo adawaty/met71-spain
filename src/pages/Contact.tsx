@@ -54,7 +54,7 @@ export default function Contact() {
 
                 toast.success("Sent. We'll follow up soon.", { id: toastId });
                 setForm({ name: "", email: "", phone: "", topic: "", message: "" });
-              } catch (_err) {
+              } catch { 
                 toast.error(
                   "Form is not connected yet. Set VITE_LEADS_API_URL or deploy the API.",
                   { id: toastId },

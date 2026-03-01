@@ -22,7 +22,18 @@ type Lead = {
   sales_note?: string | null;
 };
 
+type AdminSessionUser = {
+  id: string;
+  email: string;
+  role: "owner";
+};
+
 const STATUSES = ["new", "contacted", "qualified", "won", "lost", "spam"] as const;
+
+const LS = {
+  access: "met71.accessToken",
+  user: "met71.adminUser",
+};
 
 export default function Admin() {
   const { dir } = useLang();
@@ -32,75 +43,152 @@ export default function Admin() {
     return v && v.trim().length ? v.replace(/\/$/, "") : "";
   }, []);
 
-  const [token, setToken] = useState(() => localStorage.getItem("met71.adminToken") || "");
+  const api = (path: string) => (apiBase || "") + path;
+
+  const [adminPassword, setAdminPassword] = useState<string>("");
+
+  const [accessToken, setAccessToken] = useState(() => localStorage.getItem(LS.access) || "");
+  const [user, setUser] = useState<AdminSessionUser | null>(() => {
+    const raw = localStorage.getItem(LS.user);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  });
+
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
   const [items, setItems] = useState<Lead[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [offset, setOffset] = useState<number>(0);
   const limit = 25;
   const [loading, setLoading] = useState(false);
 
+  function saveSession(next: { access_token: string; user: AdminSessionUser }) {
+    setAccessToken(next.access_token);
+    setUser(next.user);
+    localStorage.setItem(LS.access, next.access_token);
+    localStorage.setItem(LS.user, JSON.stringify(next.user));
+  }
+
+  function clearSession() {
+    setAccessToken("");
+    setUser(null);
+    localStorage.removeItem(LS.access);
+    localStorage.removeItem(LS.user);
+  }
+
+  async function login() {
+    if (!adminPassword) return toast.error("Admin password required");
+    const toastId = toast.loading("Signing in...");
+
+    try {
+      const r = await fetch(api("/api/admin/auth/login"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: adminPassword }),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      const data = await r.json();
+      if (!data?.ok) throw new Error("bad_response");
+      saveSession({ access_token: data.access_token, user: data.user });
+      setAdminPassword("");
+      toast.success("Signed in", { id: toastId });
+    } catch { 
+      toast.error("Login failed", { id: toastId });
+    }
+  }
+
+  async function authFetch(input: RequestInfo, init?: RequestInit) {
+    if (!accessToken) throw new Error("not_signed_in");
+
+    const r = await fetch(input, {
+      ...init,
+      headers: {
+        ...(init?.headers || {}),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (r.status === 401) {
+      clearSession();
+      throw new Error("session_expired");
+    }
+
+    return r;
+  }
+
+  async function logout() {
+    clearSession();
+    try {
+      await fetch(api("/api/admin/auth/logout"), { method: "POST" });
+    } catch {
+      // ignore
+    }
+    toast.success("Signed out");
+  }
+
   async function fetchLeads(nextOffset = 0) {
-    if (!token) {
-      toast.error("Missing admin token");
+    if (!accessToken) {
+      toast.error("Please sign in first");
       return;
     }
     setLoading(true);
     const toastId = toast.loading("Loading leads...");
 
     try {
-      const url = new URL((apiBase || "") + "/api/admin/leads", window.location.origin);
+      const url = new URL(api("/api/admin/leads"), window.location.origin);
       url.searchParams.set("limit", String(limit));
       url.searchParams.set("offset", String(nextOffset));
       if (statusFilter) url.searchParams.set("status", statusFilter);
+      if (search.trim()) url.searchParams.set("q", search.trim());
 
-      const r = await fetch(url.toString(), {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const r = await authFetch(url.toString());
       if (!r.ok) throw new Error(await r.text());
       const data = await r.json();
       setItems(data.items || []);
       setTotal(data.total || 0);
       setOffset(nextOffset);
       toast.success("Loaded", { id: toastId });
-    } catch (_e) {
-      toast.error("Failed to load. Check token / API base.", { id: toastId });
+    } catch { 
+      toast.error("Failed to load. Session may have expired.", { id: toastId });
     } finally {
       setLoading(false);
     }
   }
 
   async function updateLead(id: number, patch: Partial<Lead>) {
-    if (!token) return toast.error("Missing admin token");
+    if (!accessToken) return toast.error("Please sign in first");
+
     try {
-      const r = await fetch((apiBase || "") + `/api/admin/leads/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const r = await authFetch(api(`/api/admin/leads/${id}`),
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: patch.status, sales_note: patch.sales_note }),
         },
-        body: JSON.stringify({ status: patch.status, sales_note: patch.sales_note }),
-      });
+      );
       if (!r.ok) throw new Error(await r.text());
       const data = await r.json();
       setItems((prev) => prev.map((it) => (it.id === id ? { ...it, ...data.item } : it)));
       toast.success("Updated");
-    } catch (_e) {
+    } catch { 
       toast.error("Update failed");
     }
   }
 
   function exportCsv() {
-    if (!token) return toast.error("Missing admin token");
-    const url = new URL((apiBase || "") + "/api/admin/leads.csv", window.location.origin);
+    if (!accessToken) return toast.error("Please sign in first");
+
+    const url = new URL(api("/api/admin/leads.csv"), window.location.origin);
     if (statusFilter) url.searchParams.set("status", statusFilter);
 
-    // Cannot set auth header for simple download; we pass token as query? not secure.
-    // So we do a fetch and create a blob.
     (async () => {
       const toastId = toast.loading("Exporting CSV...");
       try {
-        const r = await fetch(url.toString(), { headers: { Authorization: `Bearer ${token}` } });
+        const r = await authFetch(url.toString());
         if (!r.ok) throw new Error(await r.text());
         const blob = await r.blob();
         const a = document.createElement("a");
@@ -109,87 +197,101 @@ export default function Admin() {
         a.click();
         URL.revokeObjectURL(a.href);
         toast.success("Downloaded", { id: toastId });
-      } catch (_e) {
+      } catch { 
         toast.error("Export failed", { id: toastId });
       }
     })();
   }
 
   return (
-    <PageShell
-      title="Admin — Leads"
-      lede="Secure dashboard to manage enquiries stored in Neon."
-    >
+    <PageShell title="Admin — Leads" lede="Leads dashboard for Met71 Spain." >
       <div className="grid gap-4 lg:grid-cols-12 lg:items-start">
         <Card className="rounded-2xl border bg-card/90 p-6 lg:col-span-4">
           <div className={cn("font-display text-2xl", dir === "rtl" && "text-right")}>
-            Access
+            {user ? "Session" : "Sign in"}
           </div>
 
           <div className="mt-4 grid gap-3">
-            <div className="grid gap-2">
-              <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
-                Admin API base (optional)
-              </div>
-              <Input
-                value={apiBase}
-                readOnly
-                className="opacity-80"
-                placeholder="https://api.yourdomain.com"
-              />
-              <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
-                Set via Vercel env: VITE_ADMIN_API_BASE
-              </div>
-            </div>
 
-            <div className="grid gap-2">
-              <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
-                Admin token
-              </div>
-              <Input
-                type="password"
-                value={token}
-                onChange={(e) => {
-                  setToken(e.target.value);
-                  localStorage.setItem("met71.adminToken", e.target.value);
-                }}
-                placeholder="Paste ADMIN_TOKEN"
-              />
-            </div>
+            {!user ? (
+              <>
+                <div className="grid gap-2">
+                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
+                    Admin passcode
+                  </div>
+                  <Input
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Enter your admin passcode"
+                  />
+                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
+                    This passcode is set in Vercel as <span className="font-medium">ADMIN_PASSWORD</span>.
+                  </div>
+                </div>
 
-            <div className="grid gap-2">
-              <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
-                Status filter
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={statusFilter === "" ? "default" : "outline"}
-                  className="rounded-full"
-                  onClick={() => setStatusFilter("")}
-                >
-                  All
-                </Button>
-                {STATUSES.map((s) => (
-                  <Button
-                    key={s}
-                    variant={statusFilter === s ? "default" : "outline"}
-                    className="rounded-full"
-                    onClick={() => setStatusFilter(s)}
-                  >
-                    {s}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button onClick={login} className="rounded-full">
+                    Sign in
                   </Button>
-                ))}
-              </div>
-            </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={cn("text-sm", dir === "rtl" && "text-right")}>
+                  <div className="text-muted-foreground">Signed in as</div>
+                  <div className="font-medium">{user.email}</div>
+                </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button disabled={loading} onClick={() => fetchLeads(0)} className="rounded-full">
-                Load
-              </Button>
-              <Button variant="outline" onClick={exportCsv} className="rounded-full">
-                Export CSV
-              </Button>
-            </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <Button disabled={loading} onClick={() => fetchLeads(0)} className="rounded-full">
+                    Load
+                  </Button>
+                  <Button variant="outline" onClick={exportCsv} className="rounded-full">
+                    Export CSV
+                  </Button>
+                  <Button variant="ghost" onClick={logout} className="rounded-full">
+                    Logout
+                  </Button>
+                </div>
+
+                <div className="grid gap-2 pt-2">
+                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
+                    Search (name or email)
+                  </div>
+                  <Input
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Type a name or email..."
+                  />
+                </div>
+
+                <div className="grid gap-2 pt-2">
+                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
+                    Status filter
+                  </div>
+                  <div className={cn("flex flex-wrap gap-2", dir === "rtl" && "justify-end")}>
+                    <Button
+                      variant={statusFilter === "" ? "default" : "outline"}
+                      className="rounded-full"
+                      onClick={() => setStatusFilter("")}
+                    >
+                      All
+                    </Button>
+                    {STATUSES.map((s) => (
+                      <Button
+                        key={s}
+                        variant={statusFilter === s ? "default" : "outline"}
+                        className="rounded-full"
+                        onClick={() => setStatusFilter(s)}
+                      >
+                        {s}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </Card>
 
@@ -203,8 +305,7 @@ export default function Admin() {
               <div className={cn("flex items-start justify-between gap-4", dir === "rtl" && "flex-row-reverse")}>
                 <div className={cn("space-y-1", dir === "rtl" && "text-right")}>
                   <div className="font-display text-xl">
-                    {lead.name} 
-                    <span className="text-sm text-muted-foreground">#{lead.id}</span>
+                    {lead.name} <span className="text-sm text-muted-foreground">#{lead.id}</span>
                   </div>
                   <div className="text-sm">
                     <a className="underline" href={`mailto:${lead.email}`}>
@@ -252,9 +353,7 @@ export default function Admin() {
                 <Textarea
                   value={lead.sales_note || ""}
                   onChange={(e) =>
-                    setItems((prev) =>
-                      prev.map((it) => (it.id === lead.id ? { ...it, sales_note: e.target.value } : it)),
-                    )
+                    setItems((prev) => prev.map((it) => (it.id === lead.id ? { ...it, sales_note: e.target.value } : it)))
                   }
                   placeholder="Add internal note..."
                 />
@@ -275,7 +374,7 @@ export default function Admin() {
             <Button
               variant="outline"
               className="rounded-full"
-              disabled={offset 	<= 0 || loading}
+              disabled={offset <= 0 || loading}
               onClick={() => fetchLeads(Math.max(offset - limit, 0))}
             >
               Prev
@@ -293,7 +392,7 @@ export default function Admin() {
       </div>
 
       <Card className="mt-6 rounded-2xl border bg-[var(--sand)] p-5 text-sm text-muted-foreground">
-        	Security note: keep ADMIN_TOKEN secret and rotate it periodically.
+        Admin access is protected by a single environment variable <span className="font-medium">ADMIN_PASSWORD</span>.
       </Card>
     </PageShell>
   );

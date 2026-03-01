@@ -23,7 +23,7 @@ export default function PageShell({
             {lede ? <p className="mt-5 text-lg text-muted-foreground">{lede}</p> : null}
           </div>
         </section>
-        <section className="mx-auto max-w-6xl px-4 pb-16">{children}</section>
+        <section className="mx-auto max-w-6xl px-4 pb-28 lg:pb-16">{children}</section>
       </main>
       <SiteFooter />
     </div>

@@ -36,7 +36,7 @@ const LS = {
 };
 
 export default function Admin() {
-  const { dir } = useLang();
+  const { dir, lang } = useLang();
 
   const apiBase = useMemo(() => {
     const v = import.meta.env.VITE_ADMIN_API_BASE as string | undefined;
@@ -316,6 +316,54 @@ export default function Admin() {
                 </div>
 
                 <div className={cn("flex flex-col gap-2", dir === "rtl" && "items-end")}>
+                  <div className={cn("flex flex-wrap items-center gap-2", dir === "rtl" && "justify-end")}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={async () => {
+                        const toastId = toast.loading("Summarizing...");
+                        try {
+                          const r = await authFetch(api("/api/admin/ai"), {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ type: "summary", lead, lang }),
+                          });
+                          const data = await r.json();
+                          if (!r.ok || !data?.ok) throw new Error();
+                          toast.message("AI summary", { description: String(data.output || ""), duration: 15000, id: toastId });
+                        } catch {
+                          toast.error("AI failed", { id: toastId });
+                        }
+                      }}
+                    >
+                      AI Summary
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full"
+                      onClick={async () => {
+                        const toastId = toast.loading("Drafting reply...");
+                        try {
+                          const r = await authFetch(api("/api/admin/ai"), {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ type: "reply", lead, lang }),
+                          });
+                          const data = await r.json();
+                          if (!r.ok || !data?.ok) throw new Error();
+                          await navigator.clipboard?.writeText(String(data.output || ""));
+                          toast.message("AI reply copied", { description: String(data.output || ""), duration: 15000, id: toastId });
+                        } catch {
+                          toast.error("AI failed", { id: toastId });
+                        }
+                      }}
+                    >
+                      AI Reply
+                    </Button>
+                  </div>
+
                   <div className="text-xs text-muted-foreground">Status</div>
                   <div className="flex flex-wrap gap-2">
                     {STATUSES.map((s) => (

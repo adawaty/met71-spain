@@ -81,7 +81,19 @@ export default function AIAssistant() {
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error("ai_failed");
 
-      setMessages((prev) => [...prev, { role: "assistant", content: String(data.reply || "") }]);
+      setMessages((prev) => {
+        const next: Msg[] = [...prev, { role: "assistant", content: String(data.reply || "") }];
+        if (data?.saved_lead?.id) {
+          const note =
+            lang === "ar"
+              ? `تم حفظ طلب عرض السعر كبيان جديد (#${data.saved_lead.id}).`
+              : lang === "es"
+                ? `Se guardó la solicitud como lead (#${data.saved_lead.id}).`
+                : `Saved as a lead (#${data.saved_lead.id}).`;
+          next.push({ role: "assistant", content: note });
+        }
+        return next;
+      });
     } catch {
       const fallback =
         lang === "ar"

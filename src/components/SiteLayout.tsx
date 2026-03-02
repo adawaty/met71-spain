@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import AIAssistant from "@/components/AIAssistant";
 import { ArrowUpRight, Globe, Menu, X, Mail, MapPin, Phone, Home, Info, BriefcaseBusiness, Boxes, MessageCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -304,7 +303,6 @@ export function SiteHeader() {
 
       <MobileDrawer open={open} onClose={() => setOpen(false)} />
       <MobileDock />
-      <AIAssistant />
     </>
   );
 }

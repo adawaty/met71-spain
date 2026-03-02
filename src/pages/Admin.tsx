@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import PageShell from "@/components/PageShell";
 import { useLang } from "@/contexts/LanguageContext";
@@ -65,6 +65,13 @@ export default function Admin() {
   const [offset, setOffset] = useState<number>(0);
   const limit = 25;
   const [loading, setLoading] = useState(false);
+
+  // Auto-load leads after sign-in and when status filter changes.
+  useEffect(() => {
+    if (!user || !accessToken) return;
+    fetchLeads(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, accessToken, statusFilter]);
 
   function saveSession(next: { access_token: string; user: AdminSessionUser }) {
     setAccessToken(next.access_token);
@@ -317,51 +324,6 @@ export default function Admin() {
 
                 <div className={cn("flex flex-col gap-2", dir === "rtl" && "items-end")}>
                   <div className={cn("flex flex-wrap items-center gap-2", dir === "rtl" && "justify-end")}>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full"
-                      onClick={async () => {
-                        const toastId = toast.loading("Summarizing...");
-                        try {
-                          const r = await authFetch(api("/api/admin/ai"), {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ type: "summary", lead, lang }),
-                          });
-                          const data = await r.json();
-                          if (!r.ok || !data?.ok) throw new Error();
-                          toast.message("AI summary", { description: String(data.output || ""), duration: 15000, id: toastId });
-                        } catch {
-                          toast.error("AI failed", { id: toastId });
-                        }
-                      }}
-                    >
-                      AI Summary
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full"
-                      onClick={async () => {
-                        const toastId = toast.loading("Drafting reply...");
-                        try {
-                          const r = await authFetch(api("/api/admin/ai"), {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ type: "reply", lead, lang }),
-                          });
-                          const data = await r.json();
-                          if (!r.ok || !data?.ok) throw new Error();
-                          await navigator.clipboard?.writeText(String(data.output || ""));
-                          toast.message("AI reply copied", { description: String(data.output || ""), duration: 15000, id: toastId });
-                        } catch {
-                          toast.error("AI failed", { id: toastId });
-                        }
-                      }}
-                    >
-                      AI Reply
-                    </Button>
                   </div>
 
                   <div className="text-xs text-muted-foreground">Status</div>

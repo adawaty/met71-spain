@@ -170,13 +170,11 @@ export default function Admin() {
     if (!accessToken) return toast.error("Please sign in first");
 
     try {
-      const r = await authFetch(api(`/api/admin/leads/${id}`),
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: patch.status, sales_note: patch.sales_note }),
-        },
-      );
+      const r = await authFetch(api(`/api/admin/lead?id=${id}`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: patch.status, sales_note: patch.sales_note }),
+      });
       if (!r.ok) throw new Error(await r.text());
       const data = await r.json();
       setItems((prev) => prev.map((it) => (it.id === id ? { ...it, ...data.item } : it)));

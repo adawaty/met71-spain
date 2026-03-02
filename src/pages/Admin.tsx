@@ -36,7 +36,7 @@ const LS = {
 };
 
 export default function Admin() {
-  const { dir, lang } = useLang();
+  const { dir } = useLang();
 
   const apiBase = useMemo(() => {
     const v = import.meta.env.VITE_ADMIN_API_BASE as string | undefined;

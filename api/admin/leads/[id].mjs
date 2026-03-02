@@ -1,6 +1,6 @@
-import { getPool } from "../_lib/db.mjs";
-import { withCors, readJson, json } from "../_lib/http.mjs";
-import { requireAuth } from "../_lib/auth.mjs";
+import { getPool } from "../../_lib/db.mjs";
+import { withCors, readJson, json } from "../../_lib/http.mjs";
+import { requireAuth } from "../../_lib/auth.mjs";
 
 export default async function handler(req, res) {
   if (withCors(req, res)) return;

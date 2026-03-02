@@ -1,5 +1,6 @@
 import { json, withCors, readJson } from "../_lib/http.mjs";
 import { getPool } from "../_lib/db.mjs";
+import { retrieveChunks } from "../_lib/rag.mjs";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || "meta-llama/llama-3.1-8b-instruct";
@@ -83,8 +84,16 @@ export default async function handler(req, res) {
 
   if (!message) return json(res, 400, { ok: false, error: "message_required" });
 
+  const kb = await retrieveChunks({ lang, query: message, k: 6 }).catch(() => []);
+  const kbBlock = kb.length
+    ? "\n\nCompany knowledge base (most relevant):\n" +
+      kb
+        .map((c, i) => `(${i + 1}) ${c.title ? c.title + " — " : ""}${c.content}`)
+        .join("\n\n")
+    : "";
+
   const messages = [
-    { role: "system", content: systemPrompt(lang) },
+    { role: "system", content: systemPrompt(lang) + kbBlock },
     ...history
       .filter((m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
       .slice(-10),

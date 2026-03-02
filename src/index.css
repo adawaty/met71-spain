@@ -74,6 +74,8 @@ Design reminder (Met71): Neo‑Brutalist Trade Atlas
 
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
   }
 
   body {

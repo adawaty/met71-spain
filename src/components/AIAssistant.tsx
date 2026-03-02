@@ -9,6 +9,8 @@ import { useLang } from "@/contexts/LanguageContext";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
+type Contact = { name: string; email: string };
+
 export default function AIAssistant() {
   const { dir, lang, t } = useLang();
 
@@ -26,6 +28,27 @@ export default function AIAssistant() {
       return [];
     }
   });
+
+  const [contact, setContact] = useState<Contact>(() => {
+    try {
+      const raw = localStorage.getItem("met71.ai.contact");
+      if (!raw) return { name: "", email: "" };
+      const p = JSON.parse(raw);
+      return { name: String(p?.name || ""), email: String(p?.email || "") };
+    } catch {
+      return { name: "", email: "" };
+    }
+  });
+
+  const [showContact, setShowContact] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("met71.ai.contact", JSON.stringify({ name: contact.name, email: contact.email }));
+    } catch {
+      // ignore
+    }
+  }, [contact]);
 
   const placeholder = useMemo(() => {
     if (lang === "ar") return "اسأل عن الشحن، الجمارك، أو طلب عرض سعر...";
@@ -76,13 +99,20 @@ export default function AIAssistant() {
       const r = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, history, lang }),
+        body: JSON.stringify({
+          message: msg,
+          history,
+          lang,
+          source_page: window.location.pathname.replace(/^\//, "") || "home",
+          lead_contact: { name: contact.name, email: contact.email },
+        }),
       });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || !data?.ok) throw new Error("ai_failed");
 
       setMessages((prev) => {
         const next: Msg[] = [...prev, { role: "assistant", content: String(data.reply || "") }];
+
         if (data?.saved_lead?.id) {
           const note =
             lang === "ar"
@@ -91,7 +121,21 @@ export default function AIAssistant() {
                 ? `Se guardó la solicitud como lead (#${data.saved_lead.id}).`
                 : `Saved as a lead (#${data.saved_lead.id}).`;
           next.push({ role: "assistant", content: note });
+          setShowContact(false);
+        } else if (data?.quote_intent) {
+          const need = !contact.name.trim() || !contact.email.trim();
+          if (need) {
+            setShowContact(true);
+            const ask =
+              lang === "ar"
+                ? "للحفظ كطلب عرض سعر، من فضلك اكتب الاسم والبريد الإلكتروني بالأعلى ثم أرسل الرسالة مرة أخرى."
+                : lang === "es"
+                  ? "Para guardar tu solicitud como lead, escribe tu nombre y correo arriba y envía el mensaje otra vez."
+                  : "To save your request as a lead, enter your name and email above, then send your message again.";
+            next.push({ role: "assistant", content: ask });
+          }
         }
+
         return next;
       });
     } catch {
@@ -184,6 +228,33 @@ export default function AIAssistant() {
             </div>
 
             <div className="border-t p-4">
+              {showContact ? (
+                <div className="mb-3 grid gap-2">
+                  <div className={cn("text-xs text-muted-foreground", dir === "rtl" && "text-right")}>
+                    {lang === "ar" ? "بيانات التواصل" : lang === "es" ? "Datos de contacto" : "Contact details"}
+                  </div>
+                  <div className={cn("grid gap-2", dir === "rtl" && "text-right")}>
+                    <Input
+                      value={contact.name}
+                      onChange={(e) => setContact((p) => ({ ...p, name: e.target.value }))}
+                      placeholder={lang === "ar" ? "الاسم" : lang === "es" ? "Nombre" : "Name"}
+                    />
+                    <Input
+                      value={contact.email}
+                      onChange={(e) => setContact((p) => ({ ...p, email: e.target.value }))}
+                      placeholder={lang === "ar" ? "البريد الإلكتروني" : lang === "es" ? "Correo" : "Email"}
+                      type="email"
+                    />
+                    <div className={cn("text-[11px] text-muted-foreground", dir === "rtl" && "text-right")}>
+                      {lang === "ar"
+                        ? "سيتم حفظ المحادثة كطلب عرض سعر عند توفر الاسم والبريد الإلكتروني."
+                        : lang === "es"
+                          ? "El chat se guardará como lead cuando haya nombre y email."
+                          : "Chat will be saved as a lead once name and email are provided."}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
               <div className={cn("flex items-center gap-2", dir === "rtl" && "flex-row-reverse")}>
                 <Input
                   value={input}

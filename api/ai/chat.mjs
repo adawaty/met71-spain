@@ -77,6 +77,10 @@ export default async function handler(req, res) {
   const lang = (body?.lang || "en").toString();
   const source_page = normalizeStr(body?.source_page, 80) || "ai_chat";
 
+  const leadContact = body?.lead_contact || {};
+  const fallbackName = normalizeStr(leadContact?.name, 200);
+  const fallbackEmail = normalizeStr(leadContact?.email, 250);
+
   if (!message) return json(res, 400, { ok: false, error: "message_required" });
 
   const messages = [
@@ -127,8 +131,8 @@ export default async function handler(req, res) {
     if (quote_intent) {
       const lead = parsed.lead || {};
 
-      const name = normalizeStr(lead.name, 200);
-      const email = normalizeStr(lead.email, 250);
+      const name = normalizeStr(lead.name, 200) || fallbackName;
+      const email = normalizeStr(lead.email, 250) || fallbackEmail;
       const phone = normalizeStr(lead.phone, 80);
       const origin = normalizeStr(lead.origin, 120);
       const destination = normalizeStr(lead.destination, 120);

@@ -6,6 +6,7 @@ import coldchainImg from "@/assets/product-coldchain.jpg";
 
 import { CheckCircle2 } from "lucide-react";
 import PageShell from "@/components/PageShell";
+import SEO from "@/components/SEO";
 import { useLang } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,13 @@ export default function Services() {
   const supportItems = [t("services.support.items.1"), t("services.support.items.2"), t("services.support.items.3")];
 
   return (
-    <PageShell title={t("services.title")} lede={t("services.lede")}>
+    <>
+      <SEO
+        title="Import & Export Services"
+        description="Import and export coordination between Europe and North Africa: sourcing, customs documentation, regulatory support, and end-to-end logistics—built for predictable delivery."
+        path="/services"
+      />
+      <PageShell title={t("services.title")} lede={t("services.lede")}>
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="rounded-2xl border bg-[var(--ink)] text-[var(--paper)] p-6">
           <div className={cn("font-display text-3xl", dir === "rtl" && "text-right")}>{t("services.import.title")}</div>
@@ -87,5 +94,6 @@ export default function Services() {
         </div>
       </div>
     </PageShell>
+    </>
   );
 }

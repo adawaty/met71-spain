@@ -82,7 +82,7 @@ export type TranslationKey =
 export const translations: Record<Lang, Record<TranslationKey, string>> = {
   en: {
     "meta.company": "Met71 Spain",
-    "meta.tagline": "Trade between Europe and North Africa — made practical.",
+    "meta.tagline": "Trade between Europe and North Africa — fast, compliant, and coordinated.",
 
     "nav.home": "Home",
     "nav.about": "About",
@@ -96,7 +96,8 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
 
     "home.hero.title": "Spain–Egypt trade, handled end‑to‑end.",
     "home.hero.subtitle":
-      "Met71 Spain supports import and export operations with documentation, market intelligence, and logistics coordination — built for speed and compliance.",
+      "Met71 Spain coordinates import and export operations with documentation, market intelligence, and logistics — engineered for speed, compliance, and predictability.",
+
     "home.hero.points.1": "Import: premium European vehicles + firefighting equipment",
     "home.hero.points.2": "Export: agricultural products & fertilizers with cold-chain support",
     "home.hero.points.3": "Customs, regulations, and logistics — one coordinated process",

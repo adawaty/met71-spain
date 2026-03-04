@@ -1,4 +1,5 @@
 import PageShell from "@/components/PageShell";
+import SEO from "@/components/SEO";
 import { useLang } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,13 @@ export default function About() {
   ] as const;
 
   return (
-    <PageShell title={t("about.title")} lede={t("about.lede")}>
+    <>
+      <SEO
+        title="About Met71 Spain"
+        description="Met71 Spain is an international import & export company with operations in Spain and strategic presence in Egypt—coordinating documentation, customs, and logistics across borders."
+        path="/about"
+      />
+      <PageShell title={t("about.title")} lede={t("about.lede")}>
       <div className="grid gap-4 md:grid-cols-3">
         {blocks.map((b) => (
           <Card key={b.title} className="rounded-2xl border bg-card/85 p-6">
@@ -23,5 +30,6 @@ export default function About() {
         ))}
       </div>
     </PageShell>
+    </>
   );
 }

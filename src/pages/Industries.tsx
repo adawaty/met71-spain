@@ -4,6 +4,7 @@ import agriImg from "@/assets/product-agri.jpg";
 
 import { Flame, Tractor, Car } from "lucide-react";
 import PageShell from "@/components/PageShell";
+import SEO from "@/components/SEO";
 import { useLang } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -36,7 +37,13 @@ export default function Industries() {
   ];
 
   return (
-    <PageShell title={t("industries.title")} lede={t("industries.lede")}>
+    <>
+      <SEO
+        title="Industries We Serve"
+        description="Met71 Spain supports cross-border trade for automotive, fire safety, and agriculture—handling documentation, customs, and logistics coordination end-to-end."
+        path="/industries"
+      />
+      <PageShell title={t("industries.title")} lede={t("industries.lede")}>
       <div className="grid gap-4 md:grid-cols-3">
         {items.map((it) => {
           const Icon = it.icon;
@@ -64,5 +71,6 @@ export default function Industries() {
         })}
       </div>
     </PageShell>
+    </>
   );
 }

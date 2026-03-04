@@ -2,6 +2,7 @@ import portImg from "@/assets/hero-port.jpg";
 import docsImg from "@/assets/customs-docs.jpg";
 
 import PageShell from "@/components/PageShell";
+import SEO from "@/components/SEO";
 import { useLang } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -35,9 +36,21 @@ export default function Logistics() {
   ];
 
   return (
-    <PageShell title={t("logistics.title")} lede={t("logistics.lede")}>
+    <>
+      <SEO
+        title="Logistics, Customs & Documentation"
+        description="Cold-chain capable handling, customs documentation workflows, and measurable freight coordination—built to reduce delays and surprises across borders."
+        path="/logistics"
+      />
+      <PageShell title={t("logistics.title")} lede={t("logistics.lede")}>
       <div className="relative overflow-hidden rounded-3xl border bg-[var(--sand)]">
-        <img src={portImg} alt="Port operations" className="h-[260px] w-full object-cover md:h-[340px]" loading="lazy" />
+        <img
+          src={portImg}
+          alt="Port logistics and container handling for international shipments"
+          className="h-[260px] w-full object-cover md:h-[340px]"
+          loading="lazy"
+          decoding="async"
+        />
         <div className="pointer-events-none absolute inset-0" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.08)" }} />
       </div>
 
@@ -78,7 +91,13 @@ export default function Logistics() {
         <div className={cn("lg:col-span-5", dir === "rtl" && "lg:col-start-1")}
         >
           <Card className="overflow-hidden rounded-3xl border bg-card/90">
-            <img src={docsImg} alt="Customs documentation" className="h-[360px] w-full object-cover" loading="lazy" />
+            <img
+              src={docsImg}
+              alt="Customs and shipping documentation workflow for cross-border trade"
+              className="h-[360px] w-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
             <div className="p-5">
               <div className={cn("font-display text-2xl", dir === "rtl" && "text-right")}>Customs  documentation</div>
               <p className={cn("mt-2 text-sm text-muted-foreground", dir === "rtl" && "text-right")}
@@ -90,5 +109,6 @@ export default function Logistics() {
         </div>
       </div>
     </PageShell>
+    </>
   );
 }

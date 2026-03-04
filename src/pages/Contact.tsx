@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import PageShell from "@/components/PageShell";
+import SEO from "@/components/SEO";
 import { useLang } from "@/contexts/LanguageContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,13 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <PageShell title={t("contact.title")} lede={t("contact.lede")}>
+    <>
+      <SEO
+        title="Contact Met71 Spain"
+        description="Request a quote or ask about a shipment. Tell us what you’re moving, origin/destination, and timing—Met71 Spain will coordinate the next steps."
+        path="/contact"
+      />
+      <PageShell title={t("contact.title")} lede={t("contact.lede")}>
       <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
         <Card className="rounded-2xl border bg-card/90 p-6 lg:col-span-7">
           <form
@@ -134,5 +141,6 @@ export default function Contact() {
         </Card>
       </div>
     </PageShell>
+    </>
   );
 }

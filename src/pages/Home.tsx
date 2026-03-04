@@ -1,4 +1,5 @@
 import heroImg from "@/assets/met71-hero.png";
+import SEO from "@/components/SEO";
 import { ArrowRight, ShieldCheck, Ship, Wheat } from "lucide-react";
 import { Link } from "wouter";
 
@@ -13,6 +14,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO
+        title="Met71 Spain — Import & Export between Europe and North Africa"
+        description="Met71 Spain coordinates Spain/Europe ↔ Egypt/North Africa trade: documentation, customs, market intelligence, and logistics — built for speed and compliance."
+        path="/"
+      />
       <PageShell title={t("home.hero.title")} lede={t("home.hero.subtitle")}>
         <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
           <div className={cn("lg:col-span-7", dir === "rtl" && "lg:col-start-6")}
@@ -70,7 +76,13 @@ export default function Home() {
           <div className={cn("lg:col-span-5", dir === "rtl" && "lg:col-start-1")}
           >
             <div className="relative overflow-hidden rounded-3xl border bg-[var(--sand)]">
-              <img src={heroImg} alt="Met71 trade routes illustration" className="h-[320px] w-full object-cover md:h-[420px]" />
+              <img
+                src={heroImg}
+                alt="Met71 Spain trade routes between Europe and North Africa"
+                className="h-[320px] w-full object-cover md:h-[420px]"
+                fetchPriority="high"
+                decoding="async"
+              />
               <div className="pointer-events-none absolute inset-0" style={{ boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.06)" }} />
             </div>
 

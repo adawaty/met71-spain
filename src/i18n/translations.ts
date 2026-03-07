@@ -10,6 +10,7 @@ export type TranslationKey =
   | "nav.services"
   | "nav.industries"
   | "nav.logistics"
+  | "nav.insights"
   | "nav.contact"
   | "cta.primary"
   | "cta.secondary"
@@ -89,6 +90,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     "nav.services": "Services",
     "nav.industries": "Industries",
     "nav.logistics": "Logistics",
+    "nav.insights": "Insights",
     "nav.contact": "Contact",
 
     "cta.primary": "Request a quote",
@@ -194,6 +196,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     "nav.services": "Servicios",
     "nav.industries": "Sectores",
     "nav.logistics": "Logística",
+    "nav.insights": "Novedades",
     "nav.contact": "Contacto",
 
     "cta.primary": "Solicitar presupuesto",
@@ -298,6 +301,7 @@ export const translations: Record<Lang, Record<TranslationKey, string>> = {
     "nav.services": "الخدمات",
     "nav.industries": "القطاعات",
     "nav.logistics": "اللوجستيات",
+    "nav.insights": "مقالات",
     "nav.contact": "تواصل معنا",
 
     "cta.primary": "اطلب عرض سعر",

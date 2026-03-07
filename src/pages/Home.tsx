@@ -1,5 +1,6 @@
 import heroImg from "@/assets/met71-hero.png";
 import SEO from "@/components/SEO";
+import { testimonials } from "@/content/testimonials";
 import { ArrowRight, ShieldCheck, Ship, Wheat } from "lucide-react";
 import { Link } from "wouter";
 
@@ -101,6 +102,20 @@ export default function Home() {
               </Card>
             </div>
           </div>
+        </div>
+
+        <div className="mt-10">
+          <div className={cn("font-display text-2xl", dir === "rtl" && "text-right")}>What clients say</div>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {testimonials.slice(0, 3).map((x) => (
+              <Card key={x.quote} className="rounded-2xl border bg-card/90 p-5">
+                <div className="text-sm text-muted-foreground">“{x.quote}”</div>
+                <div className="mt-4 text-sm font-medium">{x.name}</div>
+                <div className="text-xs text-muted-foreground">{[x.company, x.role].filter(Boolean).join(" • ")}</div>
+              </Card>
+            ))}
+          </div>
+          <div className="mt-3 text-xs text-muted-foreground">Replace placeholder testimonials with real client reviews when available.</div>
         </div>
       </PageShell>
     </div>

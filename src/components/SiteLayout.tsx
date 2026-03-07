@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowUpRight, Globe, Menu, X, Mail, MapPin, Phone, Home, Info, BriefcaseBusiness, Boxes, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Globe, Menu, X, Mail, MapPin, Phone, Home, Info, BriefcaseBusiness, Boxes, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,7 @@ function MobileDrawer({
       { href: "/services", key: "nav.services" as const },
       { href: "/industries", key: "nav.industries" as const },
       { href: "/logistics", key: "nav.logistics" as const },
+      { href: "/insights", key: "nav.insights" as const },
       { href: "/contact", key: "nav.contact" as const },
     ],
     [],
@@ -186,7 +187,7 @@ function MobileDock() {
     { href: "/about", label: t("nav.about"), Icon: Info },
     { href: "/services", label: t("nav.services"), Icon: BriefcaseBusiness },
     { href: "/industries", label: t("nav.industries"), Icon: Boxes },
-    { href: "/contact", label: t("nav.contact"), Icon: MessageCircle },
+    { href: "/insights", label: t("nav.insights"), Icon: Sparkles },
   ];
 
   return (
@@ -231,6 +232,7 @@ export function SiteHeader() {
     { href: "/services", key: "nav.services" as const },
     { href: "/industries", key: "nav.industries" as const },
     { href: "/logistics", key: "nav.logistics" as const },
+    { href: "/insights", key: "nav.insights" as const },
     { href: "/contact", key: "nav.contact" as const },
   ];
 
